@@ -44,7 +44,8 @@ export default function MessageHistory(): React.ReactElement {
 			const { scrollTop, scrollHeight, clientHeight } =
 				scrollContainerRef.current;
 
-			const isAtBottom = scrollHeight - scrollTop === clientHeight;
+			const isAtBottom = scrollHeight - scrollTop <= clientHeight + 200;
+
 			setIsScrollDownButtonVisible(!isAtBottom);
 		}
 
