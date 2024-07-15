@@ -1,46 +1,37 @@
 import { Avatar, Box, Card, Paper, Typography } from '@mui/material';
 import { deepPurple } from '@mui/material/colors';
-
-const messages = [
-	{
-		id: 1,
-		message: 'Привет! Я Данил.',
-		nickname: 'Данил Очагов',
-		dateAndTime: '07/14/24 9:04 PM',
-	},
-	{
-		id: 2,
-		message: 'Привет! Я Ваня.',
-		nickname: 'Ваня',
-		dateAndTime: '07/14/24 9:05 PM',
-	},
-	{
-		id: 3,
-		message: 'Ку всем!',
-		nickname: 'Любопытный физик',
-		dateAndTime: '07/14/24 9:09 PM',
-	},
-	{
-		id: 4,
-		message: 'Привет! Я Данил.',
-		nickname: 'Данил Очагов',
-		dateAndTime: '07/14/24 9:04 PM',
-	},
-	{
-		id: 5,
-		message: 'Привет! Я Ваня.',
-		nickname: 'Ваня',
-		dateAndTime: '07/14/24 9:05 PM',
-	},
-	{
-		id: 6,
-		message: 'Ку всем!',
-		nickname: 'Любопытный физик',
-		dateAndTime: '07/14/24 9:09 PM',
-	},
-];
+import { useEffect, useRef, useState } from 'react';
+import Message from '../../../../entities/Message';
+import useWebSocket from 'react-use-websocket';
 
 export default function MessageHistory(): React.ReactElement {
+	const [messageHistory, setMessageHistory] = useState<Message[]>([]);
+
+	const endRef = useRef<HTMLDivElement | null>(null); // Последние новые сообщения, используется для прокрутки к ним
+
+	// Загружаем список всех сообщений из PostgreSQL
+	useEffect(() => {
+		fetch('http://localhost:8080/messages')
+			.then(response => response.json())
+			.then(data => {
+				setMessageHistory(data);
+			});
+	}, []);
+
+	// Парсим сообщения от WebSockets и заносим его в историю сообщений
+	useWebSocket('ws://localhost:8080', {
+		onMessage: async event => {
+			const text = await event.data.text();
+			const newMessage: Message = JSON.parse(text);
+			setMessageHistory((prev: Message[]) => [...prev, newMessage]);
+		},
+	});
+
+	// Если пришло новое сообщение то скролим вниз
+	useEffect(() => {
+		endRef.current?.scrollIntoView({ behavior: 'smooth' });
+	}, [messageHistory]);
+
 	return (
 		<Card
 			variant='outlined'
@@ -54,45 +45,51 @@ export default function MessageHistory(): React.ReactElement {
 				py: 4,
 			}}
 		>
-			{messages.map(({ id, message, nickname, dateAndTime }) => (
-				<Paper
-					key={id}
-					elevation={2}
-					sx={{
-						mx: 6,
-						p: 2,
-					}}
-				>
-					<Box
-						display='flex'
-						flexDirection='column'
-						alignItems='start'
+			{messageHistory.map(
+				({ nickname, message, dateandtime }, index: number) => (
+					<Paper
+						key={index}
+						elevation={2}
+						sx={{
+							mx: 6,
+							p: 2,
+						}}
 					>
 						<Box
 							display='flex'
-							alignItems='center'
-							gap={1}
-							sx={{ mb: 2 }}
+							flexDirection='column'
+							alignItems='start'
 						>
-							<Avatar
-								alt='Никнейм'
-								sx={{
-									bgcolor: deepPurple[500],
-								}}
+							<Box
+								display='flex'
+								alignItems='center'
+								gap={1}
+								sx={{ mb: 2 }}
 							>
-								{nickname.split(' ')[0][0]}
-								{nickname.split(' ').length > 1 &&
-									nickname.split(' ')[1][0]}
-							</Avatar>
-							<Typography variant='h6'>{nickname}</Typography>
+								<Avatar
+									alt='Никнейм'
+									sx={{
+										bgcolor: deepPurple[500],
+									}}
+								>
+									{nickname.split(' ')[0][0]}
+									{nickname.split(' ').length > 1 &&
+										nickname.split(' ')[1][0]}
+								</Avatar>
+								<Typography variant='h6'>{nickname}</Typography>
+							</Box>
+							<Typography variant='body1'>{message}</Typography>
+							<Typography
+								variant='caption'
+								sx={{ alignSelf: 'end' }}
+							>
+								{dateandtime}
+							</Typography>
 						</Box>
-						<Typography variant='body1'>{message}</Typography>
-						<Typography variant='caption' sx={{ alignSelf: 'end' }}>
-							{dateAndTime}
-						</Typography>
-					</Box>
-				</Paper>
-			))}
+					</Paper>
+				)
+			)}
+			<div ref={endRef}></div>
 		</Card>
 	);
 }
