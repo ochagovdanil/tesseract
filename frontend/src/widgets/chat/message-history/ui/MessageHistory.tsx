@@ -1,12 +1,16 @@
-import { Avatar, Box, Card, Paper, Typography } from '@mui/material';
+import { Avatar, Box, Card, Fab, Paper, Typography } from '@mui/material';
 import { deepPurple } from '@mui/material/colors';
 import { useEffect, useRef, useState } from 'react';
 import Message from '../../../../entities/Message';
 import useWebSocket from 'react-use-websocket';
+import { ArrowDownward } from '@mui/icons-material';
 
 export default function MessageHistory(): React.ReactElement {
 	const [messageHistory, setMessageHistory] = useState<Message[]>([]);
+	const [isScrollDownButtonVisible, setIsScrollDownButtonVisible] =
+		useState<boolean>(true);
 
+	const scrollContainerRef = useRef<HTMLDivElement | null>(null); // Контейнер, в котором есть вертикальная прокрутка сообщений
 	const endRef = useRef<HTMLDivElement | null>(null); // Последние новые сообщения, используется для прокрутки к ним
 
 	// Загружаем список всех сообщений из PostgreSQL
@@ -27,10 +31,30 @@ export default function MessageHistory(): React.ReactElement {
 		},
 	});
 
-	// Если пришло новое сообщение то скролим вниз
+	// Если пользователь листает вверх, то появляется кнопка "Перейти вниз"
 	useEffect(() => {
+		function handleScroll(): void {
+			if (!scrollContainerRef.current) return;
+
+			const { scrollTop, scrollHeight, clientHeight } =
+				scrollContainerRef.current;
+
+			const isAtBottom = scrollHeight - scrollTop === clientHeight;
+			setIsScrollDownButtonVisible(!isAtBottom);
+		}
+
+		const container = scrollContainerRef.current as HTMLElement;
+		container.addEventListener('scroll', handleScroll);
+
+		return () => {
+			container.removeEventListener('scroll', handleScroll);
+		};
+	}, []);
+
+	// Скроллинг к последним сообщениями
+	function handleScrollDownClick(): void {
 		endRef.current?.scrollIntoView({ behavior: 'smooth' });
-	}, [messageHistory]);
+	}
 
 	return (
 		<Card
@@ -42,8 +66,11 @@ export default function MessageHistory(): React.ReactElement {
 				display: 'flex',
 				flexDirection: 'column',
 				gap: 4,
-				py: 4,
+				pt: 4,
+				pb: 0,
+				position: 'relative',
 			}}
+			ref={scrollContainerRef}
 		>
 			{messageHistory.map(
 				({ nickname, message, dateandtime }, index: number) => (
@@ -88,6 +115,23 @@ export default function MessageHistory(): React.ReactElement {
 						</Box>
 					</Paper>
 				)
+			)}
+			{isScrollDownButtonVisible && (
+				<Fab
+					variant='extended'
+					sx={{
+						p: 2,
+						width: 'max-content',
+						position: 'sticky',
+						bottom: '3rem',
+						left: '50%',
+						transform: 'translateX(-50%)',
+					}}
+					onClick={handleScrollDownClick}
+				>
+					<ArrowDownward sx={{ mr: 1 }} />
+					Перейти к последним сообщениям
+				</Fab>
 			)}
 			<div ref={endRef}></div>
 		</Card>
