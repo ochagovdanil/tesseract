@@ -1,6 +1,6 @@
 import { Send as SendIcon } from '@mui/icons-material';
 import { Box, Button, TextField } from '@mui/material';
-import { useState } from 'react';
+import { KeyboardEvent, useState } from 'react';
 import { useSelector } from 'react-redux';
 import useWebSocket from 'react-use-websocket';
 import Message from '../../../../entities/Message';
@@ -15,7 +15,12 @@ export default function SendMessage(): React.ReactElement {
 
 	const { sendMessage } = useWebSocket('ws://localhost:8080');
 
-	function handleSendMessage(): void {
+	// При нажатии на 'Enter' отправляем сообщение
+	function handleKeyDownPress(event: KeyboardEvent<HTMLInputElement>): void {
+		if (event.key === 'Enter') validateAndSendMessage();
+	}
+
+	function validateAndSendMessage(): void {
 		// Форматируем и проверяем
 		const formattedMessage: string = message.trim();
 
@@ -40,12 +45,13 @@ export default function SendMessage(): React.ReactElement {
 				size='small'
 				value={message}
 				onChange={e => setMessage(e.target.value)}
+				onKeyDown={handleKeyDownPress}
 				sx={{ flex: '1' }}
 			/>
 			<Button
 				variant='contained'
 				endIcon={<SendIcon />}
-				onClick={handleSendMessage}
+				onClick={validateAndSendMessage}
 			>
 				Отправить
 			</Button>
