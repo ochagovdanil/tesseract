@@ -31,6 +31,11 @@ export default function MessageHistory(): React.ReactElement {
 		},
 	});
 
+	// Если пришло новое сообщение то скролим вниз
+	useEffect(() => {
+		endRef.current?.scrollIntoView({ behavior: 'smooth' });
+	}, [messageHistory]);
+
 	// Если пользователь листает вверх, то появляется кнопка "Перейти вниз"
 	useEffect(() => {
 		function handleScroll(): void {
