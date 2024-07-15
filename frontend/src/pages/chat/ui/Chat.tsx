@@ -6,7 +6,7 @@ import SnackbarMessage from '../../../features/chat/snackbar/ui/Snackbar';
 import Paths from '../../../shared/model/data/paths';
 import { RootState } from '../../../shared/model/redux/store';
 import Header from '../../../widgets/chat/header/ui/Header';
-import MessageHistory from '../../../widgets/chat/message-history/ui/MessageHistory';
+import MessageHistory from '../../../features/chat/message-history/ui/MessageHistory';
 import SendMessage from '../../../features/chat/send-message/ui/SendMessage';
 import { Box, Container } from '@mui/material';
 
