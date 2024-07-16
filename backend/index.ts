@@ -17,12 +17,6 @@ const pool: Pool = new Pool({
 	password: '123qazplm123',
 	port: 5432,
 });
-// CREATE TABLE messages (
-//   id SERIAL PRIMARY KEY,
-//   nickname VARCHAR(255),
-//   message TEXT,
-//   dateAndTime VARCHAR(255)
-// );
 
 // Подготовка WebSocket сервера
 const app: Express = express();

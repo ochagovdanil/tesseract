@@ -97,7 +97,13 @@ export default function MessageHistory(): React.ReactElement {
 							flexDirection='column'
 							alignItems='start'
 						>
-							<Box display='flex' alignItems='center' gap={1}>
+							<Box
+								display='flex'
+								alignItems='center'
+								flexWrap='wrap'
+								gap={1}
+								sx={{ mb: 2 }}
+							>
 								<Avatar
 									alt='Никнейм'
 									sx={{
@@ -113,7 +119,7 @@ export default function MessageHistory(): React.ReactElement {
 							<Typography variant='body1'>{message}</Typography>
 							<Typography
 								variant='caption'
-								sx={{ alignSelf: 'end' }}
+								sx={{ alignSelf: 'end', mt: 1 }}
 							>
 								{dateandtime}
 							</Typography>
