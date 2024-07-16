@@ -1,12 +1,16 @@
-require('dotenv').config();
+import express, { Express, NextFunction, Request, Response } from 'express';
+import dotenv from 'dotenv';
 
-const express = require('express');
-const cors = require('cors');
-const http = require('http');
-const WebSocket = require('ws');
-const { Pool } = require('pg');
+dotenv.config();
 
-const pool = new Pool({
+import cors from 'cors';
+import http from 'http';
+import WebSocket from 'ws';
+import { Pool, QueryResult } from 'pg';
+import Message from './types/Message';
+
+// Подключаем PostgreSQL
+const pool: Pool = new Pool({
 	user: 'postgres',
 	host: 'localhost',
 	database: 'tesseract',
@@ -20,22 +24,27 @@ const pool = new Pool({
 //   dateAndTime VARCHAR(255)
 // );
 
-const app = express();
+// Подготовка WebSocket сервера
+const app: Express = express();
 app.use(cors());
 
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 // Соединение установлено
-wss.on('connection', ws => {
+wss.on('connection', (ws: WebSocket) => {
 	console.log('WebSockets connection established!');
 
 	// Новое сообщение
-	ws.on('message', async message => {
+	ws.on('message', async (message: WebSocket.RawData) => {
 		console.log('WebSockets got a new message:', message);
 
 		// Вставляем новое сообщение в PostgreSQL
-		const { nickname, message: msg, dateandtime } = JSON.parse(message);
+		const {
+			nickname,
+			message: msg,
+			dateandtime,
+		} = JSON.parse(message.toString());
 
 		await pool.query(
 			'INSERT INTO messages (nickname, message, dateandtime) VALUES ($1, $2, $3)',
@@ -43,7 +52,7 @@ wss.on('connection', ws => {
 		);
 
 		// Отправляем новое сообщение всем
-		wss.clients.forEach(client => {
+		wss.clients.forEach((client: WebSocket) => {
 			if (client !== ws && client.readyState === WebSocket.OPEN) {
 				client.send(message);
 			}
@@ -57,23 +66,26 @@ wss.on('connection', ws => {
 });
 
 // Отправляем клиенту список всех сообщений чата
-app.get('/messages', async (req, res) => {
-	const results = await pool.query(
+app.get('/messages', async (_req: Request, res: Response) => {
+	const results: QueryResult<Message> = await pool.query(
 		'SELECT * FROM messages ORDER BY dateandtime ASC'
 	);
 	res.json(results.rows);
 });
 
-app.get('*', (req, res) => {
+// Обрабатываем 404 ошибку
+app.get('*', (_req: Request, res: Response) => {
 	res.send(404).json({ error: 'The requested page not found!' });
 });
 
-app.use((err, req, res, next) => {
+// Обрабатываем 500 ошибку сервера
+app.use((_err: Error, _req: Request, res: Response, _next: NextFunction) => {
 	res.status(500).json({ error: 'Internal Server Error Occurred!' });
 });
 
-const PORT = process.env.PORT || 8080;
-const HOST = process.env.HOST || 'localhost';
+// ЗАпускаем сервер
+const PORT: number = Number(process.env.PORT) || 8080;
+const HOST: string = process.env.HOST || 'localhost';
 
 server.listen(PORT, () => {
 	console.log(`Server started on ${HOST}:${PORT}`);
