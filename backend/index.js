@@ -1,12 +1,11 @@
 require('dotenv').config();
 
 const express = require('express');
-var cors = require('cors');
-
+const cors = require('cors');
 const http = require('http');
 const WebSocket = require('ws');
-
 const { Pool } = require('pg');
+
 const pool = new Pool({
 	user: 'postgres',
 	host: 'localhost',
@@ -73,8 +72,9 @@ app.use((err, req, res, next) => {
 	res.status(500).json({ error: 'Internal Server Error Occurred!' });
 });
 
-const PORT = process.env.PORT ?? 8080;
+const PORT = process.env.PORT || 8080;
+const HOST = process.env.HOST || 'localhost';
 
 server.listen(PORT, () => {
-	console.log(`Server started on port ${PORT}`);
+	console.log(`Server started on ${HOST}:${PORT}`);
 });
