@@ -48,7 +48,12 @@ export default function Profile(): React.ReactElement {
 
 	return (
 		<Box display='flex' alignItems='center' gap={2}>
-			<Typography variant='body1'>{nickname}</Typography>
+			<Typography
+				variant='body1'
+				sx={{ display: { xs: 'none', sm: 'inline' } }}
+			>
+				{nickname}
+			</Typography>
 			<Tooltip title='Дополнительно'>
 				<IconButton
 					id='basic-button'

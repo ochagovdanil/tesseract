@@ -35,6 +35,7 @@ export default function Login(): React.ReactElement {
 			display='flex'
 			justifyContent='center'
 			alignItems='center'
+			flexWrap='wrap'
 			gap={2}
 			sx={{ mt: 4 }}
 		>

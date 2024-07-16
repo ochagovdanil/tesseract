@@ -38,7 +38,12 @@ export default function SendMessage(): React.ReactElement {
 	}
 
 	return (
-		<Box display='flex' gap={2} sx={{ height: 'max-content', my: 2 }}>
+		<Box
+			display='flex'
+			flexWrap='wrap'
+			gap={2}
+			sx={{ height: 'max-content', my: 2 }}
+		>
 			<TextField
 				variant='outlined'
 				label='Введите сообщение'
@@ -46,11 +51,12 @@ export default function SendMessage(): React.ReactElement {
 				value={message}
 				onChange={e => setMessage(e.target.value)}
 				onKeyDown={handleKeyDownPress}
-				sx={{ flex: '1' }}
+				sx={{ flex: { sm: '1', xs: 'auto' } }}
 			/>
 			<Button
 				variant='contained'
 				endIcon={<SendIcon />}
+				sx={{ width: { sm: 'auto', xs: '100%' } }}
 				onClick={validateAndSendMessage}
 			>
 				Отправить

@@ -29,7 +29,9 @@ export default function Content(): React.ReactElement {
 			<Box
 				component='img'
 				sx={{
-					height: 350,
+					maxWidth: '100%',
+					width: 550,
+					display: 'block',
 				}}
 				alt='Тессеракт в Интерстеллар'
 				src={tesseractImage}

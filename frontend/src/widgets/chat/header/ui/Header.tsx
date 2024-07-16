@@ -13,7 +13,12 @@ export default function Header(): React.ReactElement {
 				>
 					<Box display='flex' alignItems='center' gap={1}>
 						<Avatar alt='Логотип' src={logo} />
-						<Typography variant='h6'>Тессеракт</Typography>
+						<Typography
+							variant='h6'
+							sx={{ display: { md: 'inline', xs: 'none' } }}
+						>
+							Тессеракт
+						</Typography>
 					</Box>
 					<Profile />
 				</Box>

@@ -15,7 +15,7 @@ export default function RulesList(): React.ReactElement {
 			</Typography>
 			<List sx={{ listStyle: 'decimal' }}>
 				{rules.map(({ id, rule }) => (
-					<ListItem key={id} sx={{ display: 'list-item' }}>
+					<ListItem key={id} sx={{ display: 'list-item', ml: 2 }}>
 						<ListItemText>{rule}</ListItemText>
 					</ListItem>
 				))}

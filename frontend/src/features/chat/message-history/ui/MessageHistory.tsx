@@ -139,8 +139,13 @@ export default function MessageHistory(): React.ReactElement {
 					}}
 					onClick={handleScrollDownClick}
 				>
-					<ArrowDownward sx={{ mr: 1 }} />
-					Перейти к последним сообщениям
+					<ArrowDownward />
+					<Typography
+						variant='body1'
+						sx={{ ml: 2, display: { md: 'inline', xs: 'none' } }}
+					>
+						Перейти к последним сообщениям
+					</Typography>
 				</Fab>
 			)}
 			<div ref={endRef}></div>
