@@ -1,5 +1,5 @@
 import { Box, Button, TextField } from '@mui/material';
-import { useState } from 'react';
+import { useState, KeyboardEvent } from 'react';
 import { useDispatch } from 'react-redux';
 import { setNickname } from '../../../shared/model/redux/slices/nickname';
 import { AppDispatch } from '../../../shared/model/redux/store';
@@ -13,8 +13,13 @@ export default function Login(): React.ReactElement {
 
 	const dispatch = useDispatch<AppDispatch>();
 
+	// При нажатии на 'Enter' логинимся
+	function handleKeyDownPress(event: KeyboardEvent<HTMLInputElement>): void {
+		if (event.key === 'Enter') login();
+	}
+
 	// Устанавливаем новый никнейм для Redux
-	function handleSubmitClick(): void {
+	function login(): void {
 		if (inputNickname.length !== 0) {
 			dispatch(setNickname(inputNickname.trim()));
 			navigate(Paths.CHAT, {
@@ -38,11 +43,12 @@ export default function Login(): React.ReactElement {
 				variant='standard'
 				value={inputNickname}
 				onChange={e => setInputNickname(e.target.value)}
+				onKeyDown={handleKeyDownPress}
 				required
 				error={inputNickname.length === 0}
 				sx={{ width: '18rem' }}
 			/>
-			<Button variant='contained' onClick={handleSubmitClick}>
+			<Button variant='contained' onClick={login}>
 				Присоединиться
 			</Button>
 		</Box>

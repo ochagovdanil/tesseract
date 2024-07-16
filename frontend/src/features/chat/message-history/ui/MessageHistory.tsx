@@ -8,7 +8,7 @@ import { ArrowDownward } from '@mui/icons-material';
 export default function MessageHistory(): React.ReactElement {
 	const [messageHistory, setMessageHistory] = useState<Message[]>([]);
 	const [isScrollDownButtonVisible, setIsScrollDownButtonVisible] =
-		useState<boolean>(true);
+		useState<boolean>(false);
 
 	const scrollContainerRef = useRef<HTMLDivElement | null>(null); // Контейнер, в котором есть вертикальная прокрутка сообщений
 	const endRef = useRef<HTMLDivElement | null>(null); // Последние новые сообщения, используется для прокрутки к ним
@@ -58,8 +58,12 @@ export default function MessageHistory(): React.ReactElement {
 	}, []);
 
 	// Скроллинг к последним сообщениями
-	function handleScrollDownClick(): void {
+	async function handleScrollDownClick(): Promise<void> {
 		endRef.current?.scrollIntoView({ behavior: 'smooth' });
+
+		setTimeout(() => {
+			setIsScrollDownButtonVisible(false);
+		}, 500);
 	}
 
 	return (
