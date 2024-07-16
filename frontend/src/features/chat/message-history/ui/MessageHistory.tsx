@@ -77,7 +77,7 @@ export default function MessageHistory(): React.ReactElement {
 				flexDirection: 'column',
 				gap: 4,
 				pt: 4,
-				pb: 0,
+				pb: 3,
 				position: 'relative',
 			}}
 			ref={scrollContainerRef}
@@ -97,12 +97,7 @@ export default function MessageHistory(): React.ReactElement {
 							flexDirection='column'
 							alignItems='start'
 						>
-							<Box
-								display='flex'
-								alignItems='center'
-								gap={1}
-								sx={{ mb: 2 }}
-							>
+							<Box display='flex' alignItems='center' gap={1}>
 								<Avatar
 									alt='Никнейм'
 									sx={{
